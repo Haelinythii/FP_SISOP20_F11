@@ -32,12 +32,12 @@ void treeBiasa(char *path, int level, char* ar, int levelThreshold)
   struct stat st;
 
   if((fd = open(path, 0)) < 0){
-    printf(2, "ls: cannot open %s\n", path);
+    printf(2, "tree: cannot open %s\n", path);
     return;
   }
 
   if(fstat(fd, &st) < 0){
-    printf(2, "ls: cannot stat %s\n", path);
+    printf(2, "tree: cannot stat %s\n", path);
     close(fd);
     return;
   }
@@ -63,7 +63,7 @@ void treeBiasa(char *path, int level, char* ar, int levelThreshold)
     // printf(1, "dir--------------------------------------\n");
 
     if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
-      printf(1, "ls: path too long\n");
+      printf(1, "tree: path too long\n");
       break;
     }
 
@@ -84,7 +84,7 @@ void treeBiasa(char *path, int level, char* ar, int levelThreshold)
         memmove(p, de.name, DIRSIZ);
         p[DIRSIZ] = 0;
         if(stat(buf, &st) < 0){
-            printf(1, "ls: cannot stat %s\n", buf);
+            printf(1, "tree: cannot stat %s\n", buf);
             continue;
         }
 
@@ -125,117 +125,6 @@ void treeBiasa(char *path, int level, char* ar, int levelThreshold)
   }
   close(fd);
 }
-
-void treeL()
-{
-
-}
-
-void treed(char* path, int level)
-{
-    char buf[512], *p;
-  int fd;
-  struct dirent de;
-  struct stat st;
-
-  if((fd = open(path, 0)) < 0){
-    printf(2, "ls: cannot open %s\n", path);
-    return;
-  }
-
-  if(fstat(fd, &st) < 0){
-    printf(2, "ls: cannot stat %s\n", path);
-    close(fd);
-    return;
-  }
-
-  switch(st.type){
-  case T_FILE:
-    printf(1, "file-------------------------------------\n");
-    if(level == 0)
-    {
-        printf(1, "|---%s\n", fmtname(path));
-    }
-    else if(level > 0)
-    {
-        for (int i = 0; i < level; i++)
-        {
-            printf(1, "   ");
-        }
-        printf(1, "|---%s\n", fmtname(path));
-    }
-    break;
-
-  case T_DIR:
-    // printf(1, "dir--------------------------------------\n");
-
-    if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
-      printf(1, "ls: path too long\n");
-      break;
-    }
-
-    strcpy(buf, path);
-    p = buf+strlen(buf);
-    *p++ = '/';
-
-    if(strcmp(path, ".") == 0) printf(1, ".\n");
-    else if(level == 0 && strcmp(path, ".") != 0) printf(1, "%s\n", fmtname(path));
-    
-
-
-    while(read(fd, &de, sizeof(de)) == sizeof(de))
-    {
-        if (strcmp(de.name, ".") == 0 || strcmp(de.name, "..") == 0) continue;
-        if(de.inum == 0)
-            continue;
-        memmove(p, de.name, DIRSIZ);
-        p[DIRSIZ] = 0;
-        if(stat(buf, &st) < 0){
-            printf(1, "ls: cannot stat %s\n", buf);
-            continue;
-        }
-        // printf(1, "%s\n", buf);
-        if(st.type == T_FILE || st.type == T_DEV) continue;
-
-        // printf(1, "%d\n", level);
-        // if(level > 0) printf(1, "|");
-        // if(level > 1) printf(1, " ");
-        printf(1, "|");
-        for (int i = 0; i < level; i++)
-        {
-            printf(1, "   |");
-        }
-
-        switch (st.type)
-        {
-        case T_FILE:
-            // printf(1, "---%s\n", fmtname(buf));
-            break;
-        
-        case T_DIR:
-            printf(1, "---%s\n", fmtname(buf));
-            // printf(1, "rekursi\n");
-            treed(buf, level+1);
-            break;
-
-        case T_DEV:
-            // printf(1, "---%s\n", fmtname(buf));
-            break;
-        }
-
-        
-
-        // printf(1, "%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
-    }
-    break;
-  }
-  close(fd);
-}
-
-// void treeBiasa()
-// {
-//     printf(1, ".\n");
-// }
 
 
 
