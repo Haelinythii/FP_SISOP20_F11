@@ -48,6 +48,11 @@ copy(char *source, char *dest){
   char buf[512], destName[512];
   int fs, fd, r, w;
 
+  if(isDir(source)){
+    printf(1, "cp: -r is not declared.\n");
+    return;
+  }
+
   if ((fs = open(source, O_RDONLY)) < 0) {
     printf(1, "cp: open source %s failed\n", source);
     return;
